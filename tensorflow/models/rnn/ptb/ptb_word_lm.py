@@ -61,7 +61,8 @@ import time
 import numpy as np
 import tensorflow as tf
 
-from tensorflow.models.rnn.ptb import reader
+#from tensorflow.models.rnn.ptb import reader
+import reader
 
 flags = tf.flags
 logging = tf.logging
@@ -298,6 +299,7 @@ def main(_):
       mtest = PTBModel(is_training=False, config=eval_config)
 
     tf.initialize_all_variables().run()
+    checkpoint_path = os.path.join(FLAGS.data_path, "ptb.ckpt")
 
     for i in range(config.max_max_epoch):
       lr_decay = config.lr_decay ** max(i - config.max_epoch, 0.0)
@@ -309,10 +311,15 @@ def main(_):
       print("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
       valid_perplexity = run_epoch(session, mvalid, valid_data, tf.no_op())
       print("Epoch: %d Valid Perplexity: %.3f" % (i + 1, valid_perplexity))
+      if i % 10==0:
+        model.saver.save(sess, checkpoint_path, global_step=i)
 
+
+    model.saver.save(sess, checkpoint_path, global_step=i)
     test_perplexity = run_epoch(session, mtest, test_data, tf.no_op())
     print("Test Perplexity: %.3f" % test_perplexity)
-
+    1/0
 
 if __name__ == "__main__":
   tf.app.run()
+word_to_id
